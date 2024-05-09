@@ -15,4 +15,4 @@ async function connectDB() {
 }
 
 // Export the connected database instance directly
-module.exports = { db: connectDB() };
+module.exports = { database: connectDB };

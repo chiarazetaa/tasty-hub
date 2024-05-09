@@ -1,12 +1,18 @@
 const fastify = require('fastify');
-const { db } = require('./db');
+const cors = require('@fastify/cors');
+const { database } = require('./db');
 
 const app = fastify();
+// enable CORS with specific origin
+app.register(cors, {
+    origin: 'http://localhost:4200',
+});
 const port = 3000;
 
 // define a route
-app.get('/', async function (req: any, res: any) {
+app.get('/api/data', async function (req: any, res: any) {
     try {
+        const db = await database();
         let restaurants = await db.collection('restaurants').find({}).toArray();
         return restaurants;
     } catch (err) {
