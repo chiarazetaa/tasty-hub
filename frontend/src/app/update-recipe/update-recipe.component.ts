@@ -29,7 +29,7 @@ export class UpdateRecipeComponent {
 
   updateRecipe() {
     this.recipeService.updateRecipe(this.recipeId, this.recipeData).subscribe(() => {
-      this.router.navigate(['/recipes']);
+      this.router.navigate(['/recipes/list']);
     });
   }
 }

@@ -14,15 +14,27 @@
     margin-top: 0;
 }
 
-.delete-button {
+.delete-button,
+.update-button {
     background-color: #ff4d4d;
     color: white;
     border: none;
     padding: 5px 10px;
     border-radius: 3px;
     cursor: pointer;
+    margin-right: 5px;
+    text-decoration: none;
 }
 
-.delete-button:hover {
+.delete-button:hover,
+.update-button:hover {
     background-color: #ff6666;
+}
+
+.update-button {
+    background-color: #4CAF50;
+}
+
+.update-button:hover {
+    background-color: #45a049;
 }

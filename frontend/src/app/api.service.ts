@@ -23,7 +23,9 @@ export class ApiService {
   }
 
   updateRecipe(id: string, recipeData: any): Observable<any> {
-    return this.http.put<any>(`${environment.backendUrl}/api/recipes/${id}`, recipeData);
+    // exclude _id field from recipeData
+    const { _id, ...data } = recipeData;
+    return this.http.put<any>(`${environment.backendUrl}/api/recipes/${_id}`, data);
   }
 
   deleteRecipe(id: string): Observable<any> {

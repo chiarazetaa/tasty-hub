@@ -2,9 +2,9 @@
     <h2>Update Recipe</h2>
     <form>
         <label for="name">Name:</label>
-        <input type="text" id="name" [(ngModel)]="recipeData.name"><br>
+        <input type="text" id="name" [(ngModel)]="recipeData.name" [ngModelOptions]="{standalone: true}"><br>
         <label for="description">Description:</label>
-        <textarea id="description" [(ngModel)]="recipeData.description"></textarea><br>
+        <textarea id="description" [(ngModel)]="recipeData.description" [ngModelOptions]="{standalone: true}"></textarea><br>
         <button (click)="updateRecipe()">Update Recipe</button>
     </form>
 </div>

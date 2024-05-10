@@ -2,4 +2,5 @@
     <h3>{{ recipe.name }}</h3>
     <p>Description: {{ recipe.description }}</p>
     <button class="delete-button" (click)="deleteRecipe(recipe._id)">Delete</button>
+    <a routerLink="/recipes/{{recipe._id}}/update" class="update-button">Update</a>
 </div>

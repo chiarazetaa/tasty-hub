@@ -38,12 +38,25 @@ app.post('/api/recipes', async function (req: any, res: any) {
     }
 });
 
+// get a recipe
+app.get('/api/recipes/:id', async function (req: any, res: any) {
+    try {
+        let db = await database();
+        let recipeId = new ObjectId(req.params.id);
+        let result = await db.collection('recipes').findOne({ _id: recipeId });
+        return result;
+    } catch (err) {
+        console.error(err);
+        return { error: 'Failed to update recipe' };
+    }
+});
+
 // update a recipe
 app.put('/api/recipes/:id', async function (req: any, res: any) {
     try {
         let db = await database();
-        let recipeId = req.params.id;
-        let updatedRecipe = req.body; // Assicurati che la richiesta includa i dati aggiornati della ricetta
+        let recipeId = new ObjectId(req.params.id);
+        let updatedRecipe = req.body; 
         let result = await db.collection('recipes').updateOne({ _id: recipeId }, { $set: updatedRecipe });
         if (result.modifiedCount === 0) {
             return { error: 'Recipe not found' };
@@ -58,8 +71,6 @@ app.put('/api/recipes/:id', async function (req: any, res: any) {
 // delete a recipe
 app.delete('/api/recipes/:id', async function (req: any, res: any) {
     try {
-        console.log(new ObjectId(req.params.id));
-        
         let db = await database();
         let recipeId = new ObjectId(req.params.id);
         let result = await db.collection('recipes').deleteOne({ _id: recipeId });
