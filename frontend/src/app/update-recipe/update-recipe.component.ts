@@ -32,4 +32,8 @@ export class UpdateRecipeComponent {
       this.router.navigate(['/recipes/list']);
     });
   }
+
+  addIngredientField(): void {
+    this.recipeData.ingredients.push({ name: '', quantity: '' });
+  }
 }

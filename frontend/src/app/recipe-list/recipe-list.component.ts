@@ -22,4 +22,17 @@ export class RecipeListComponent {
       this.recipes = this.recipes.filter(recipe => recipe._id !== id);
     });
   }
+
+  removeIngredientFromRecipe(recipe: any, ingredientName: string): void {
+    let recipeId = recipe._id
+    this.recipeService.removeIngredientFromRecipe(recipeId, ingredientName).subscribe({
+      next: () => {
+        console.log('Ingredient removed successfully');
+        window.location.reload();
+      },
+      error: (error) => {
+        console.error('Failed to remove ingredient:', error);
+      }
+    });
+  }
 }

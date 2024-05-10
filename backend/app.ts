@@ -102,12 +102,12 @@ app.post('/api/recipes/:id/ingredients', async function (req: any, res: any) {
 });
 
 // Endpoint per rimuovere un sotto-documento dall'array di ingredienti di una ricetta
-app.delete('/api/recipes/:id/ingredients/:ingredientId', async function (req: any, res: any) {
+app.delete('/api/recipes/:id/ingredients/:ingredientName', async function (req: any, res: any) {
     try {
         let db = await database();
-        let recipeId = req.params.id;
-        let ingredientId = req.params.ingredientId;
-        let result = await db.collection('recipes').updateOne({ _id: recipeId }, { $pull: { ingredients: { _id: ingredientId } } });
+        let recipeId = new ObjectId(req.params.id);
+        let ingredientName = req.params.ingredientName;
+        let result = await db.collection('recipes').updateOne({ _id: recipeId }, { $pull: { ingredients: { name: ingredientName } } });
         if (result.modifiedCount === 0) {
             return { error: 'Recipe or ingredient not found' };
         }

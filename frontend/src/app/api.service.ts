@@ -31,4 +31,12 @@ export class ApiService {
   deleteRecipe(id: string): Observable<any> {
     return this.http.delete<any>(`${environment.backendUrl}/api/recipes/${id}`);
   }
+
+  addIngredientToRecipe(recipeId: string, ingredientData: any): Observable<any> {
+    return this.http.post<any>(`${environment.backendUrl}/api/recipes/${recipeId}/ingredients`, { ingredient: ingredientData });
+  }
+
+  removeIngredientFromRecipe(recipeId: string, ingredientName: string): Observable<any> {
+    return this.http.delete<any>(`${environment.backendUrl}/api/recipes/${recipeId}/ingredients/${ingredientName}`);
+  }
 }

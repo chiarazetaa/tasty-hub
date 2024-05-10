@@ -21,8 +21,19 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 1em;
 }
 
 button:hover {
     background-color: #005f76;
+}
+
+.ingredients {
+    width: 50%;
+    padding: 1em;
+    border: solid 1px black;
+}
+
+.ingredientInput {
+    width: 80% !important;
 }
