@@ -15,10 +15,19 @@ app.get('/api/recipes', async function (req: any, res: any) {
     try {
         let db = await database();
         let page = req.query.page || 1;
-        let pageSize = 10; // Imposta le dimensioni della pagina a 10 per esempio
+        let pageSize = 1;
         let skip = (page - 1) * pageSize;
         let recipes = await db.collection('recipes').find({}).skip(skip).limit(pageSize).toArray();
-        return recipes;
+
+        let totalRecipes = await db.collection('recipes').countDocuments();
+
+        let totalPages = Math.ceil(totalRecipes / pageSize);
+
+        return {
+            recipes,
+            totalPages,
+            currentPage: page
+        };
     } catch (err) {
         console.error(err);
         return { error: 'Failed to fetch data from MongoDB' };
@@ -29,7 +38,7 @@ app.get('/api/recipes', async function (req: any, res: any) {
 app.post('/api/recipes', async function (req: any, res: any) {
     try {
         let db = await database();
-        let newRecipe = req.body; // Assicurati che la richiesta includa i dati della nuova ricetta
+        let newRecipe = req.body;
         let result = await db.collection('recipes').insertOne(newRecipe);
         return result.insertedId;
     } catch (err) {
@@ -56,7 +65,7 @@ app.put('/api/recipes/:id', async function (req: any, res: any) {
     try {
         let db = await database();
         let recipeId = new ObjectId(req.params.id);
-        let updatedRecipe = req.body; 
+        let updatedRecipe = req.body;
         let result = await db.collection('recipes').updateOne({ _id: recipeId }, { $set: updatedRecipe });
         if (result.modifiedCount === 0) {
             return { error: 'Recipe not found' };
@@ -84,30 +93,38 @@ app.delete('/api/recipes/:id', async function (req: any, res: any) {
     }
 });
 
-// Endpoint per aggiungere un sotto-documento all'array di ingredienti di una ricetta
-app.post('/api/recipes/:id/ingredients', async function (req: any, res: any) {
-    try {
-        let db = await database();
-        let recipeId = req.params.id;
-        let newIngredient = req.body.ingredient; // Assicurati che la richiesta includa il nuovo ingrediente
-        let result = await db.collection('recipes').updateOne({ _id: recipeId }, { $push: { ingredients: newIngredient } });
-        if (result.modifiedCount === 0) {
-            return { error: 'Recipe not found' };
-        }
-        return { message: 'Ingredient added to recipe successfully' };
-    } catch (err) {
-        console.error(err);
-        return { error: 'Failed to add ingredient to recipe' };
-    }
-});
-
-// Endpoint per rimuovere un sotto-documento dall'array di ingredienti di una ricetta
-app.delete('/api/recipes/:id/ingredients/:ingredientName', async function (req: any, res: any) {
+// update ingredient from recipe
+app.put('/api/recipes/:id/ingredients/:ingredientId', async function (req: any, res: any) {
     try {
         let db = await database();
         let recipeId = new ObjectId(req.params.id);
-        let ingredientName = req.params.ingredientName;
-        let result = await db.collection('recipes').updateOne({ _id: recipeId }, { $pull: { ingredients: { name: ingredientName } } });
+        let ingredientId = new ObjectId(req.params.ingredientId);
+
+        let { name, quantity } = req.body.ingredient;
+
+        let result = await db.collection('recipes').updateOne(
+            { _id: recipeId, 'ingredients._id': new ObjectId(ingredientId) },
+            { $set: { 'ingredients.$.name': name, 'ingredients.$.quantity': quantity } }
+        );
+
+        if (result.modifiedCount === 0) {
+            return { error: 'Recipe or ingredient not found' };
+        }
+
+        return { message: 'Ingredient updated successfully' };
+    } catch (err) {
+        console.error(err);
+        return { error: 'Failed to update ingredient from recipe' };
+    }
+});
+
+// remove ingredient from recipe
+app.delete('/api/recipes/:id/ingredients/:ingredientId', async function (req: any, res: any) {
+    try {
+        let db = await database();
+        let recipeId = new ObjectId(req.params.id);
+        let ingredientId = new ObjectId(req.params.ingredientId);
+        let result = await db.collection('recipes').updateOne({ _id: recipeId }, { $pull: { ingredients: { _id: ingredientId } } });
         if (result.modifiedCount === 0) {
             return { error: 'Recipe or ingredient not found' };
         }

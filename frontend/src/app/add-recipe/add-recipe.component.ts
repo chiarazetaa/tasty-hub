@@ -29,4 +29,8 @@ export class AddRecipeComponent {
   addIngredientField(): void {
     this.recipeData.ingredients.push({ name: '', quantity: '' });
   }
+
+  isValidForm(): boolean {
+    return this.recipeData.name && this.recipeData.description && this.recipeData.instructions;
+  }
 }

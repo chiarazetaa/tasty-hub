@@ -7,18 +7,26 @@
             <h4>Ingredients:</h4>
             <ul>
                 <li *ngFor="let ingredient of recipe.ingredients">
-                    {{ ingredient.name }} - {{ ingredient.quantity }}
-                    <button (click)="removeIngredientFromRecipe(recipe, ingredient.name)">Remove</button>
+                    <input type="text" [(ngModel)]="ingredient.name" /> - <input type="text"
+                        [(ngModel)]="ingredient.quantity" />
+                    <button (click)="updateIngredient(recipe._id, ingredient)">Update</button>
+                    <button (click)="removeIngredientFromRecipe(recipe._id, ingredient._id)">Remove</button>
                 </li>
             </ul>
         </div>
 
-        <h3>Instructions:</h3>
-        <ol>
-            <li *ngFor="let instruction of recipe.instructions">{{ instruction }}</li>
-        </ol>
+        <div *ngIf="recipe.instructions && recipe.instructions !== ''">
+            <h3>Instructions:</h3>
+            <p>{{ recipe.instructions }}</p>
+        </div>
 
         <button class="delete-button" (click)="deleteRecipe(recipe._id)">Delete</button>
         <a routerLink="/recipes/{{recipe._id}}/update" class="update-button">Update</a>
+
+        <div class="pagination">
+            <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+            <span>{{ currentPage }} / {{ totalPages }}</span>
+            <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+        </div>
     </div>
 </div>

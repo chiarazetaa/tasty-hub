@@ -10,8 +10,8 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  getRecipes(): Observable<any> {
-    return this.http.get<any>(`${environment.backendUrl}/api/recipes`);
+  getRecipes(page: number): Observable<any> {
+    return this.http.get<any>(`${environment.backendUrl}/api/recipes?page=${page}`);
   }
 
   getRecipe(id: string): Observable<any> {
@@ -32,11 +32,11 @@ export class ApiService {
     return this.http.delete<any>(`${environment.backendUrl}/api/recipes/${id}`);
   }
 
-  addIngredientToRecipe(recipeId: string, ingredientData: any): Observable<any> {
-    return this.http.post<any>(`${environment.backendUrl}/api/recipes/${recipeId}/ingredients`, { ingredient: ingredientData });
+  updateIngredient(recipeId: string, ingredientId: string, ingredientData: any): Observable<any> {
+    return this.http.put<any>(`${environment.backendUrl}/api/recipes/${recipeId}/ingredients/${ingredientId}`, { ingredient: ingredientData });
   }
 
-  removeIngredientFromRecipe(recipeId: string, ingredientName: string): Observable<any> {
-    return this.http.delete<any>(`${environment.backendUrl}/api/recipes/${recipeId}/ingredients/${ingredientName}`);
+  removeIngredientFromRecipe(recipeId: string, ingredientId: string): Observable<any> {
+    return this.http.delete<any>(`${environment.backendUrl}/api/recipes/${recipeId}/ingredients/${ingredientId}`);
   }
 }

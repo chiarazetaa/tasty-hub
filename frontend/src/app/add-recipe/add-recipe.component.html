@@ -2,27 +2,11 @@
     <h2>Add Recipe</h2>
     <form>
         <label for="name">Name:</label>
-        <input type="text" id="name" [(ngModel)]="recipeData.name" [ngModelOptions]="{standalone: true}"><br>
+        <input type="text" id="name" [(ngModel)]="recipeData.name" [ngModelOptions]="{standalone: true}" required><br>
         <label for="description">Description:</label>
-        <textarea id="description" [(ngModel)]="recipeData.description"
-            [ngModelOptions]="{standalone: true}"></textarea><br>
-
-        <div class="ingredients">
-            <!-- Ingredients -->
-            <h3>Ingredients:</h3>
-            <div *ngFor="let ingredient of recipeData.ingredients; let i=index">
-                <label for="ingredientName{{i}}">Name:</label><br>
-                <input type="text" id="ingredientName{{i}}" [(ngModel)]="ingredient.name" class="ingredientInput"
-                    [ngModelOptions]="{standalone: true}"><br>
-                <label for="ingredientQuantity{{i}}">Quantity:</label><br>
-                <input type="text" id="ingredientQuantity{{i}}" [(ngModel)]="ingredient.quantity" class="ingredientInput"
-                    [ngModelOptions]="{standalone: true}">
-                <hr>
-            </div>
-
-            <button (click)="addIngredientField()">Add Ingredient</button><br>
-        </div>
-
-        <button (click)="addRecipe()">Add Recipe</button>
+        <textarea id="description" [(ngModel)]="recipeData.description" [ngModelOptions]="{standalone: true}" required></textarea><br>
+        <label for="instructions">Instructions:</label>
+        <textarea id="instructions" [(ngModel)]="recipeData.instructions" [ngModelOptions]="{standalone: true}" required></textarea><br>
+        <button (click)="addRecipe()" [disabled]="!isValidForm()">Add Recipe</button>
     </form>
 </div>
