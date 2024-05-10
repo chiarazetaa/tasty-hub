@@ -1,12 +1,8 @@
-<div>
-  <h1>{{ title }}</h1>
-  <div *ngIf="data">
-    <h2>Data from Backend:</h2>
-    <ul>
-      <li *ngFor="let item of data">{{ item.name }}</li>
-    </ul>
-  </div>
-  <div *ngIf="!data">
-    <p>Loading data...</p>
-  </div>
-</div>
+<h1>Recipe Manager</h1>
+
+<nav>
+  <a routerLink="/recipes/list" routerLinkActive="active-link">Recipe List</a>
+  <a routerLink="/recipes/add" routerLinkActive="active-link">Add Recipe</a>
+</nav>
+
+<router-outlet></router-outlet>

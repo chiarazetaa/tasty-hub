@@ -10,9 +10,23 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  // Method to fetch data from backend
-  getData(): Observable<any> {
-    return this.http.get<any>(`${environment.backendUrl}/api/data`);
+  getRecipes(): Observable<any> {
+    return this.http.get<any>(`${environment.backendUrl}/api/recipes`);
   }
 
+  getRecipe(id: string): Observable<any> {
+    return this.http.get<any>(`${environment.backendUrl}/api/recipes/${id}`);
+  }
+
+  addRecipe(recipeData: any): Observable<any> {
+    return this.http.post<any>(`${environment.backendUrl}/api/recipes`, recipeData);
+  }
+
+  updateRecipe(id: string, recipeData: any): Observable<any> {
+    return this.http.put<any>(`${environment.backendUrl}/api/recipes/${id}`, recipeData);
+  }
+
+  deleteRecipe(id: string): Observable<any> {
+    return this.http.delete<any>(`${environment.backendUrl}/api/recipes/${id}`);
+  }
 }

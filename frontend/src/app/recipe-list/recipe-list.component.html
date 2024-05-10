@@ -1,0 +1,5 @@
+<div *ngFor="let recipe of recipes" class="recipe-card">
+    <h3>{{ recipe.name }}</h3>
+    <p>Description: {{ recipe.description }}</p>
+    <button class="delete-button" (click)="deleteRecipe(recipe._id)">Delete</button>
+</div>
