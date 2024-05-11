@@ -39,12 +39,16 @@
     background-color: #45a049;
 }
 
+.ingredientButton {
+    margin-left: 10px;
+}
+
 .pagination {
     margin-top: 20px;
 }
 
 .pagination button {
-    background-color: #4CAF50;
+    background-color: #505050;
     border: none;
     color: white;
     padding: 8px 16px;
@@ -58,10 +62,14 @@
 }
 
 .pagination button:hover {
-    background-color: #45a049;
+    background-color: #282828;
 }
 
 .pagination button:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
+}
+
+.ingredientRow {
+    margin-bottom: 5px;
 }

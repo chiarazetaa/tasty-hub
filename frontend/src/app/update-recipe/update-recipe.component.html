@@ -6,7 +6,7 @@
         <label for="description">Description:</label>
         <textarea id="description" [(ngModel)]="recipeData.description"[ngModelOptions]="{standalone: true}" required></textarea><br>
         <label for="instructions">Instructions:</label>
-        <textarea id="instructions" [(ngModel)]="recipeData.instructions" [ngModelOptions]="{standalone: true}" required></textarea><br>
+        <textarea id="instructions" class="instructionTextArea" [(ngModel)]="recipeData.instructions" [ngModelOptions]="{standalone: true}" required></textarea><br>
         <button (click)="updateRecipe()" [disabled]="!isValidForm()">Update Recipe</button>
     </form>
 </div>

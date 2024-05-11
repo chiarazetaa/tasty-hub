@@ -93,18 +93,59 @@ app.delete('/api/recipes/:id', async function (req: any, res: any) {
     }
 });
 
-// update ingredient from recipe
+// add ingredient to recipe
+app.post('/api/recipes/:id/ingredients', async function (req: any, res: any) {
+    try {
+        let db = await database();
+        let recipeId = new ObjectId(req.params.id);
+        let newIngredientId = new ObjectId();
+        let { name, quantity } = req.body.ingredient;
+
+        let recipe = await db.collection('recipes').findOne({ _id: recipeId });
+        recipe.ingredients.push({
+            _id: newIngredientId,
+            name: name,
+            quantity: quantity
+        });
+        
+        let result = await db.collection('recipes').updateOne(
+            { _id: recipeId },
+            {$set: { ingredients: recipe.ingredients }}
+        );
+
+        return { message: 'Ingredient added to recipe successfully' };
+    } catch (err) {
+        console.error(err);
+        return { error: 'Failed to update ingredient from recipe' };
+    }
+});
+
+// update ingredient of recipe
 app.put('/api/recipes/:id/ingredients/:ingredientId', async function (req: any, res: any) {
     try {
         let db = await database();
         let recipeId = new ObjectId(req.params.id);
         let ingredientId = new ObjectId(req.params.ingredientId);
+        let { name, quantity } = req.body;
 
-        let { name, quantity } = req.body.ingredient;
+        let recipe = await db.collection('recipes').findOne({ _id: recipeId, 'ingredients._id': ingredientId });
+        
+        let newIngredientArray = [];
+        for (let ingredient of recipe.ingredients) {
+            if (ingredient._id.toString() === ingredientId.toString()) {
+                newIngredientArray.push({
+                    _id: ingredientId,
+                    name: name,
+                    quantity: quantity
+                });
+            } else {
+                newIngredientArray.push(ingredient);
+            }
+        }
 
         let result = await db.collection('recipes').updateOne(
-            { _id: recipeId, 'ingredients._id': new ObjectId(ingredientId) },
-            { $set: { 'ingredients.$.name': name, 'ingredients.$.quantity': quantity } }
+            { _id: recipeId, 'ingredients._id': ingredientId },
+            {$set: { ingredients: newIngredientArray }}
         );
 
         if (result.modifiedCount === 0) {
@@ -124,7 +165,21 @@ app.delete('/api/recipes/:id/ingredients/:ingredientId', async function (req: an
         let db = await database();
         let recipeId = new ObjectId(req.params.id);
         let ingredientId = new ObjectId(req.params.ingredientId);
-        let result = await db.collection('recipes').updateOne({ _id: recipeId }, { $pull: { ingredients: { _id: ingredientId } } });
+
+        let recipe = await db.collection('recipes').findOne({ _id: recipeId, 'ingredients._id': ingredientId });
+        
+        let newIngredientArray = [];
+        for (let ingredient of recipe.ingredients) {
+            if (ingredient._id.toString() !== ingredientId.toString()) {
+                newIngredientArray.push(ingredient);
+            }
+        }
+
+        let result = await db.collection('recipes').updateOne(
+            { _id: recipeId, 'ingredients._id': ingredientId },
+            {$set: { ingredients: newIngredientArray }}
+        );
+    
         if (result.modifiedCount === 0) {
             return { error: 'Recipe or ingredient not found' };
         }

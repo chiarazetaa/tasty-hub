@@ -8,6 +8,8 @@ import { ApiService } from '../api.service';
 })
 export class RecipeListComponent {
   recipes: any[] = [];
+  addIngredientsVisible: boolean = false;
+  addEmptyIngredientsVisible: boolean = true;
   currentPage: number = 1;
   totalPages: number = 0;
 
@@ -42,23 +44,45 @@ export class RecipeListComponent {
     });
   }
 
-  updateIngredient(recipeId: string, ingredient: any): void {
-    this.recipeService.updateIngredient(recipeId, ingredient._id, { name: ingredient.name, quantity: ingredient.quantity })
-      .subscribe({
-        next: () => {
-          console.log('Ingredient updated successfully');
-        },
-        error: (error) => {
-          console.error('Failed to update ingredient:', error);
-        }
-      });
+  addEmptyIngredient(recipe: any): void {
+    recipe.ingredients.push({ name: '', quantity: '' });
+    // check if any ingredient is missing name or quantity
+    this.addIngredientsVisible = recipe.ingredients.some((ingredient: any) => !ingredient.name || !ingredient.quantity);
+    this.addEmptyIngredientsVisible = recipe.ingredients.every((ingredient: any) => ingredient.name && ingredient.quantity);
   }
 
-  removeIngredientFromRecipe(recipeId: any, ingredientId: string): void {
+  addIngredients(recipe: any, ingredient: any): void {
+    let recipeId = recipe._id;
+    let ingredientData = { name: ingredient.name, quantity: ingredient.quantity }; 
+
+    this.recipeService.addIngredients(recipeId, ingredientData).subscribe({
+      next: (response) => {
+        window.location.reload();
+        console.log('Ingredient added successfully:', response);
+      },
+      error: (error) => {
+        console.error('Error adding ingredient:', error);
+      }
+    });
+  }
+
+  updateIngredient(recipeId: string, ingredient: any): void {
+    this.recipeService.updateIngredient(recipeId, ingredient._id, { name: ingredient.name, quantity: ingredient.quantity }).subscribe({
+      next: () => {
+        console.log('Ingredient updated successfully');
+      },
+      error: (error) => {
+        console.error('Failed to update ingredient:', error);
+      }
+    });
+  }
+
+  removeIngredientFromRecipe(recipe: any, ingredientId: string): void {
+    let recipeId = recipe._id;
     this.recipeService.removeIngredientFromRecipe(recipeId, ingredientId).subscribe({
       next: () => {
-        console.log('Ingredient removed successfully');
         window.location.reload();
+        console.log('Ingredient removed successfully');
       },
       error: (error) => {
         console.error('Failed to remove ingredient:', error);

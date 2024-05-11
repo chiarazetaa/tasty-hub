@@ -1,8 +1,8 @@
-<h1>Recipe Manager</h1>
+<h1>Tasty Hub</h1>
 
-<nav>
+<nav class="tabs">
   <a routerLink="/recipes/list" routerLinkActive="active-link">Recipe List</a>
-  <a routerLink="/recipes/add" routerLinkActive="active-link">Add Recipe</a>
+  <a routerLink="/recipes/add" routerLinkActive="active-link" *ngIf="isRecipeListRoute()">Add Recipe</a>
 </nav>
 
 <router-outlet></router-outlet>
