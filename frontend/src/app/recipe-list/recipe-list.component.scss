@@ -45,6 +45,7 @@
 
 .pagination {
     margin-top: 20px;
+    float: right;
 }
 
 .pagination button {
@@ -70,6 +71,16 @@
     cursor: not-allowed;
 }
 
+.pages {
+    font-size: 20px;
+}
+
 .ingredientRow {
     margin-bottom: 5px;
+}
+
+small {
+    float: right;
+    color: gray;
+    padding: 5px;
 }

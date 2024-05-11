@@ -1,5 +1,6 @@
 <div *ngIf="recipes">
     <div *ngFor="let recipe of recipes" class="recipe-card">
+        <small>Last Modified: {{ recipe.updatedAt | date:'dd-MM-yy hh:mm' }}</small>
         <h3>{{ recipe.name }}</h3>
         <p>{{ recipe.description }}</p>
 
@@ -24,11 +25,10 @@
 
         <button class="delete-button" (click)="deleteRecipe(recipe._id)">Delete</button>
         <a routerLink="/recipes/{{recipe._id}}/update" class="update-button">Update</a>
-
-        <div class="pagination">
-            <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
-            <span>{{ currentPage }} / {{ totalPages }}</span>
-            <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
-        </div>
+    </div>
+    <div class="pagination">
+        <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+        <span class="pages">{{ currentPage }} / {{ totalPages }}</span>
+        <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
     </div>
 </div>

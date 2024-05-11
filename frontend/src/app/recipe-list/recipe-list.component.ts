@@ -69,6 +69,7 @@ export class RecipeListComponent {
   updateIngredient(recipeId: string, ingredient: any): void {
     this.recipeService.updateIngredient(recipeId, ingredient._id, { name: ingredient.name, quantity: ingredient.quantity }).subscribe({
       next: () => {
+        window.location.reload();
         console.log('Ingredient updated successfully');
       },
       error: (error) => {

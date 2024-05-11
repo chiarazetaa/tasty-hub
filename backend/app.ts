@@ -39,6 +39,8 @@ app.post('/api/recipes', async function (req: any, res: any) {
     try {
         let db = await database();
         let newRecipe = req.body;
+        newRecipe.createdAt = new Date();
+        newRecipe.updatedAt = new Date();
         let result = await db.collection('recipes').insertOne(newRecipe);
         return result.insertedId;
     } catch (err) {
@@ -66,6 +68,7 @@ app.put('/api/recipes/:id', async function (req: any, res: any) {
         let db = await database();
         let recipeId = new ObjectId(req.params.id);
         let updatedRecipe = req.body;
+        updatedRecipe.updatedAt = new Date();
         let result = await db.collection('recipes').updateOne({ _id: recipeId }, { $set: updatedRecipe });
         if (result.modifiedCount === 0) {
             return { error: 'Recipe not found' };
@@ -110,8 +113,15 @@ app.post('/api/recipes/:id/ingredients', async function (req: any, res: any) {
         
         let result = await db.collection('recipes').updateOne(
             { _id: recipeId },
-            {$set: { ingredients: recipe.ingredients }}
+            {$set: { 
+                ingredients: recipe.ingredients,
+                updatedAt: new Date()
+            }}
         );
+
+        if (result.modifiedCount === 0) {
+            return { error: 'Recipe or ingredient not found' };
+        }
 
         return { message: 'Ingredient added to recipe successfully' };
     } catch (err) {
@@ -145,7 +155,10 @@ app.put('/api/recipes/:id/ingredients/:ingredientId', async function (req: any, 
 
         let result = await db.collection('recipes').updateOne(
             { _id: recipeId, 'ingredients._id': ingredientId },
-            {$set: { ingredients: newIngredientArray }}
+            {$set: { 
+                ingredients: newIngredientArray,
+                updatedAt: new Date()
+            }}
         );
 
         if (result.modifiedCount === 0) {
@@ -177,7 +190,10 @@ app.delete('/api/recipes/:id/ingredients/:ingredientId', async function (req: an
 
         let result = await db.collection('recipes').updateOne(
             { _id: recipeId, 'ingredients._id': ingredientId },
-            {$set: { ingredients: newIngredientArray }}
+            {$set: { 
+                ingredients: newIngredientArray,
+                updatedAt: new Date()
+            }}
         );
     
         if (result.modifiedCount === 0) {
