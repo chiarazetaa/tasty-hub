@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { ApiService } from '../api.service';
+import { Ingredient } from '../_models/ingredient.model';
+import { Recipe } from '../_models/recipe.model';
+import { ApiService } from '../_services/api.service';
 
 @Component({
   selector: 'app-recipe-list',
@@ -7,7 +9,7 @@ import { ApiService } from '../api.service';
   styleUrls: ['./recipe-list.component.scss']
 })
 export class RecipeListComponent {
-  recipes: any[] = [];
+  recipes: Recipe[] = [];
   addIngredientsVisible: boolean = false;
   addEmptyIngredientsVisible: boolean = true;
   currentPage: number = 1;
@@ -44,14 +46,14 @@ export class RecipeListComponent {
     });
   }
 
-  addEmptyIngredient(recipe: any): void {
-    recipe.ingredients.push({ name: '', quantity: '' });
+  addEmptyIngredient(recipe: Recipe): void {
+    recipe.ingredients.push({ _id: '', name: '', quantity: '' });
     // check if any ingredient is missing name or quantity
-    this.addIngredientsVisible = recipe.ingredients.some((ingredient: any) => !ingredient.name || !ingredient.quantity);
-    this.addEmptyIngredientsVisible = recipe.ingredients.every((ingredient: any) => ingredient.name && ingredient.quantity);
+    this.addIngredientsVisible = recipe.ingredients.some((ingredient: Ingredient) => !ingredient.name || !ingredient.quantity);
+    this.addEmptyIngredientsVisible = recipe.ingredients.every((ingredient: Ingredient) => ingredient.name && ingredient.quantity);
   }
 
-  addIngredients(recipe: any, ingredient: any): void {
+  addIngredients(recipe: Recipe, ingredient: Ingredient): void {
     let recipeId = recipe._id;
     let ingredientData = { name: ingredient.name, quantity: ingredient.quantity }; 
 
@@ -66,7 +68,7 @@ export class RecipeListComponent {
     });
   }
 
-  updateIngredient(recipeId: string, ingredient: any): void {
+  updateIngredient(recipeId: string, ingredient: Ingredient): void {
     this.recipeService.updateIngredient(recipeId, ingredient._id, { name: ingredient.name, quantity: ingredient.quantity }).subscribe({
       next: () => {
         window.location.reload();
@@ -78,7 +80,7 @@ export class RecipeListComponent {
     });
   }
 
-  removeIngredientFromRecipe(recipe: any, ingredientId: string): void {
+  removeIngredientFromRecipe(recipe: Recipe, ingredientId: string): void {
     let recipeId = recipe._id;
     this.recipeService.removeIngredientFromRecipe(recipeId, ingredientId).subscribe({
       next: () => {

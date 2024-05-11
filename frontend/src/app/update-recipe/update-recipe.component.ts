@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiService } from '../api.service';
+import { Recipe } from '../_models/recipe.model';
+import { ApiService } from '../_services/api.service';
 
 @Component({
   selector: 'app-update-recipe',
@@ -9,11 +10,14 @@ import { ApiService } from '../api.service';
 })
 export class UpdateRecipeComponent {
   recipeId: string = '';
-  recipeData: any = {
+  recipeData: Recipe = {
+    _id: '',
     name: '',
     description: '',
     ingredients: [],
-    instructions: []
+    instructions: '',
+    createdAt: new Date(),
+    updatedAt: new Date()
   };
 
   constructor(private route: ActivatedRoute, private recipeService: ApiService, private router: Router) { }
@@ -33,11 +37,11 @@ export class UpdateRecipeComponent {
     });
   }
 
-  addIngredientField(): void {
-    this.recipeData.ingredients.push({ name: '', quantity: '' });
-  }
-
   isValidForm(): boolean {
-    return this.recipeData.name && this.recipeData.description && this.recipeData.instructions;
+    if (this.recipeData.name && this.recipeData.description && this.recipeData.instructions) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

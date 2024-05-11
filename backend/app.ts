@@ -2,6 +2,7 @@ const fastify = require('fastify');
 const cors = require('@fastify/cors');
 const { ObjectId } = require('mongodb');
 const { database } = require('./db');
+const { opts } = require('./schemas');
 
 const app = fastify();
 // enable CORS with specific origin
@@ -11,7 +12,7 @@ app.register(cors, {
 const port = 3000;
 
 // get recipes list
-app.get('/api/recipes', async function (req: any, res: any) {
+app.get('/api/recipes', opts.recipeListOptions, async function (req: any, res: any) {
     try {
         let db = await database();
         let page = req.query.page || 1;
@@ -30,15 +31,16 @@ app.get('/api/recipes', async function (req: any, res: any) {
         };
     } catch (err) {
         console.error(err);
-        return { error: 'Failed to fetch data from MongoDB' };
+        return { error: 'Failed to fetch recipes' };
     }
 });
 
 // create a recipe
-app.post('/api/recipes', async function (req: any, res: any) {
+app.post('/api/recipes', opts.createRecipeOptions, async function (req: any, res: any) {
     try {
         let db = await database();
         let newRecipe = req.body;
+        newRecipe._id = new ObjectId();
         newRecipe.createdAt = new Date();
         newRecipe.updatedAt = new Date();
         let result = await db.collection('recipes').insertOne(newRecipe);
@@ -50,7 +52,7 @@ app.post('/api/recipes', async function (req: any, res: any) {
 });
 
 // get a recipe
-app.get('/api/recipes/:id', async function (req: any, res: any) {
+app.get('/api/recipes/:id', opts.getRecipeOptions, async function (req: any, res: any) {
     try {
         let db = await database();
         let recipeId = new ObjectId(req.params.id);
@@ -63,11 +65,12 @@ app.get('/api/recipes/:id', async function (req: any, res: any) {
 });
 
 // update a recipe
-app.put('/api/recipes/:id', async function (req: any, res: any) {
+app.put('/api/recipes/:id', opts.updateRecipeOptions, async function (req: any, res: any) {
     try {
         let db = await database();
         let recipeId = new ObjectId(req.params.id);
         let updatedRecipe = req.body;
+        updatedRecipe.createdAt = new Date(updatedRecipe.createdAt);
         updatedRecipe.updatedAt = new Date();
         let result = await db.collection('recipes').updateOne({ _id: recipeId }, { $set: updatedRecipe });
         if (result.modifiedCount === 0) {
@@ -81,7 +84,7 @@ app.put('/api/recipes/:id', async function (req: any, res: any) {
 });
 
 // delete a recipe
-app.delete('/api/recipes/:id', async function (req: any, res: any) {
+app.delete('/api/recipes/:id', opts.deleteRecipeOptions, async function (req: any, res: any) {
     try {
         let db = await database();
         let recipeId = new ObjectId(req.params.id);
@@ -97,7 +100,7 @@ app.delete('/api/recipes/:id', async function (req: any, res: any) {
 });
 
 // add ingredient to recipe
-app.post('/api/recipes/:id/ingredients', async function (req: any, res: any) {
+app.post('/api/recipes/:id/ingredients', opts.addIngredientOptions, async function (req: any, res: any) {
     try {
         let db = await database();
         let recipeId = new ObjectId(req.params.id);
@@ -110,7 +113,7 @@ app.post('/api/recipes/:id/ingredients', async function (req: any, res: any) {
             name: name,
             quantity: quantity
         });
-        
+
         let result = await db.collection('recipes').updateOne(
             { _id: recipeId },
             {$set: { 
@@ -131,7 +134,7 @@ app.post('/api/recipes/:id/ingredients', async function (req: any, res: any) {
 });
 
 // update ingredient of recipe
-app.put('/api/recipes/:id/ingredients/:ingredientId', async function (req: any, res: any) {
+app.put('/api/recipes/:id/ingredients/:ingredientId', opts.updateIngredientOptions, async function (req: any, res: any) {
     try {
         let db = await database();
         let recipeId = new ObjectId(req.params.id);
@@ -139,7 +142,7 @@ app.put('/api/recipes/:id/ingredients/:ingredientId', async function (req: any, 
         let { name, quantity } = req.body;
 
         let recipe = await db.collection('recipes').findOne({ _id: recipeId, 'ingredients._id': ingredientId });
-        
+
         let newIngredientArray = [];
         for (let ingredient of recipe.ingredients) {
             if (ingredient._id.toString() === ingredientId.toString()) {
@@ -173,12 +176,12 @@ app.put('/api/recipes/:id/ingredients/:ingredientId', async function (req: any, 
 });
 
 // remove ingredient from recipe
-app.delete('/api/recipes/:id/ingredients/:ingredientId', async function (req: any, res: any) {
+app.delete('/api/recipes/:id/ingredients/:ingredientId', opts.removeIngredientOptions, async function (req: any, res: any) {
     try {
         let db = await database();
         let recipeId = new ObjectId(req.params.id);
         let ingredientId = new ObjectId(req.params.ingredientId);
-
+        
         let recipe = await db.collection('recipes').findOne({ _id: recipeId, 'ingredients._id': ingredientId });
         
         let newIngredientArray = [];
@@ -195,7 +198,7 @@ app.delete('/api/recipes/:id/ingredients/:ingredientId', async function (req: an
                 updatedAt: new Date()
             }}
         );
-    
+
         if (result.modifiedCount === 0) {
             return { error: 'Recipe or ingredient not found' };
         }

@@ -32,3 +32,7 @@
         <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
     </div>
 </div>
+
+<div *ngIf="!recipes">
+    <p>No recipes to show</p>
+</div>
