@@ -1,3 +1,4 @@
+import { Recipe, GetRecipesResponse, Ingredient } from './types';
 const fastify = require('fastify');
 const cors = require('@fastify/cors');
 const { ObjectId } = require('mongodb');
@@ -15,20 +16,21 @@ const port = 3000;
 app.get('/api/recipes', opts.recipeListOptions, async function (req: any, res: any) {
     try {
         let db = await database();
-        let page = req.query.page || 1;
-        let pageSize = 1;
-        let skip = (page - 1) * pageSize;
-        let recipes = await db.collection('recipes').find({}).skip(skip).limit(pageSize).toArray();
+        let page: number = req.query.page || 1;
+        let pageSize: number = 1;
+        let skip: number = (page - 1) * pageSize;
 
-        let totalRecipes = await db.collection('recipes').countDocuments();
+        let recipes: Recipe[] = await db.collection('recipes').find({}).skip(skip).limit(pageSize).toArray();
+        let totalRecipes: number = await db.collection('recipes').countDocuments();
+        let totalPages: number = Math.ceil(totalRecipes / pageSize);
 
-        let totalPages = Math.ceil(totalRecipes / pageSize);
-
-        return {
+        let response: GetRecipesResponse = {
             recipes,
             totalPages,
             currentPage: page
         };
+
+        return response;
     } catch (err) {
         console.error(err);
         return { error: 'Failed to fetch recipes' };
@@ -39,7 +41,7 @@ app.get('/api/recipes', opts.recipeListOptions, async function (req: any, res: a
 app.post('/api/recipes', opts.createRecipeOptions, async function (req: any, res: any) {
     try {
         let db = await database();
-        let newRecipe = req.body;
+        let newRecipe: Recipe = req.body;
         newRecipe._id = new ObjectId();
         newRecipe.createdAt = new Date();
         newRecipe.updatedAt = new Date();
@@ -55,8 +57,8 @@ app.post('/api/recipes', opts.createRecipeOptions, async function (req: any, res
 app.get('/api/recipes/:id', opts.getRecipeOptions, async function (req: any, res: any) {
     try {
         let db = await database();
-        let recipeId = new ObjectId(req.params.id);
-        let result = await db.collection('recipes').findOne({ _id: recipeId });
+        let recipeId: typeof ObjectId = new ObjectId(req.params.id);
+        let result: Recipe = await db.collection('recipes').findOne({ _id: recipeId });
         return result;
     } catch (err) {
         console.error(err);
@@ -68,9 +70,9 @@ app.get('/api/recipes/:id', opts.getRecipeOptions, async function (req: any, res
 app.put('/api/recipes/:id', opts.updateRecipeOptions, async function (req: any, res: any) {
     try {
         let db = await database();
-        let recipeId = new ObjectId(req.params.id);
-        let updatedRecipe = req.body;
-        updatedRecipe.createdAt = new Date(updatedRecipe.createdAt);
+        let recipeId: typeof ObjectId = new ObjectId(req.params.id);
+        let updatedRecipe: Recipe = req.body;
+        updatedRecipe.createdAt = new Date(req.body.createdAt);
         updatedRecipe.updatedAt = new Date();
         let result = await db.collection('recipes').updateOne({ _id: recipeId }, { $set: updatedRecipe });
         if (result.modifiedCount === 0) {
@@ -87,7 +89,7 @@ app.put('/api/recipes/:id', opts.updateRecipeOptions, async function (req: any, 
 app.delete('/api/recipes/:id', opts.deleteRecipeOptions, async function (req: any, res: any) {
     try {
         let db = await database();
-        let recipeId = new ObjectId(req.params.id);
+        let recipeId: typeof ObjectId = new ObjectId(req.params.id);
         let result = await db.collection('recipes').deleteOne({ _id: recipeId });
         if (result.deletedCount === 0) {
             return { error: 'Recipe not found' };
@@ -103,11 +105,11 @@ app.delete('/api/recipes/:id', opts.deleteRecipeOptions, async function (req: an
 app.post('/api/recipes/:id/ingredients', opts.addIngredientOptions, async function (req: any, res: any) {
     try {
         let db = await database();
-        let recipeId = new ObjectId(req.params.id);
-        let newIngredientId = new ObjectId();
-        let { name, quantity } = req.body.ingredient;
+        let recipeId: typeof ObjectId = new ObjectId(req.params.id);
+        let newIngredientId: typeof ObjectId = new ObjectId();
+        let { name, quantity }: Ingredient = req.body.ingredient;
 
-        let recipe = await db.collection('recipes').findOne({ _id: recipeId });
+        let recipe: Recipe = await db.collection('recipes').findOne({ _id: recipeId });
         recipe.ingredients.push({
             _id: newIngredientId,
             name: name,
@@ -137,15 +139,15 @@ app.post('/api/recipes/:id/ingredients', opts.addIngredientOptions, async functi
 app.put('/api/recipes/:id/ingredients/:ingredientId', opts.updateIngredientOptions, async function (req: any, res: any) {
     try {
         let db = await database();
-        let recipeId = new ObjectId(req.params.id);
-        let ingredientId = new ObjectId(req.params.ingredientId);
-        let { name, quantity } = req.body;
+        let recipeId: typeof ObjectId = new ObjectId(req.params.id);
+        let ingredientId: typeof ObjectId = new ObjectId(req.params.ingredientId);
+        let { name, quantity }: Ingredient = req.body;
 
-        let recipe = await db.collection('recipes').findOne({ _id: recipeId, 'ingredients._id': ingredientId });
+        let recipe: Recipe = await db.collection('recipes').findOne({ _id: recipeId, 'ingredients._id': ingredientId });
 
         let newIngredientArray = [];
         for (let ingredient of recipe.ingredients) {
-            if (ingredient._id.toString() === ingredientId.toString()) {
+            if (ingredient._id && ingredient._id.toString() === ingredientId.toString()) {
                 newIngredientArray.push({
                     _id: ingredientId,
                     name: name,
@@ -179,14 +181,14 @@ app.put('/api/recipes/:id/ingredients/:ingredientId', opts.updateIngredientOptio
 app.delete('/api/recipes/:id/ingredients/:ingredientId', opts.removeIngredientOptions, async function (req: any, res: any) {
     try {
         let db = await database();
-        let recipeId = new ObjectId(req.params.id);
-        let ingredientId = new ObjectId(req.params.ingredientId);
-        
-        let recipe = await db.collection('recipes').findOne({ _id: recipeId, 'ingredients._id': ingredientId });
+        let recipeId: typeof ObjectId = new ObjectId(req.params.id);
+        let ingredientId: typeof ObjectId = new ObjectId(req.params.ingredientId);
+
+        let recipe: Recipe = await db.collection('recipes').findOne({ _id: recipeId, 'ingredients._id': ingredientId });
         
         let newIngredientArray = [];
         for (let ingredient of recipe.ingredients) {
-            if (ingredient._id.toString() !== ingredientId.toString()) {
+            if (ingredient._id && ingredient._id.toString() !== ingredientId.toString()) {
                 newIngredientArray.push(ingredient);
             }
         }
