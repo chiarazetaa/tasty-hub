@@ -44,7 +44,9 @@ The server-side of the application is a Node.js application located in the "back
 - MongoDB: A NoSQL database used for storing recipe and ingredient data.
 
 ## Automated Tests
-Automated tests for both the frontend and backend components can be added in the "tests" directory of their respective folders. These tests can cover unit tests for individual components, integration tests for API endpoints, and end-to-end tests for user flows.
+To run tests for the backend, execute the following command:
+`npm test`
+This command will run automated tests to verify the functionality and behavior of the backend API endpoints.
 
 ## Contact Information
 Chiara Zuffi
