@@ -52,3 +52,4 @@ This command will run automated tests to verify the functionality and behavior o
 Chiara Zuffi
 - Email: chiara.zuffi19@gmail.com
 - GitHub: https://github.com/chiarazetaa
+- LinkedIn: https://www.linkedin.com/in/zuffichiara/
