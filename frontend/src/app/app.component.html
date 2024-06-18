@@ -2,7 +2,9 @@
 
 <nav class="tabs">
   <a routerLink="/recipes/list" routerLinkActive="active-link">Recipe List</a>
-  <a routerLink="/recipes/add" routerLinkActive="active-link" *ngIf="isRecipeListRoute()">Add Recipe</a>
+  @if (isRecipeListRoute()) {
+    <a routerLink="/recipes/add" routerLinkActive="active-link">Add Recipe</a>
+  }
 </nav>
 
 <router-outlet></router-outlet>

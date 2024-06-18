@@ -1,38 +1,56 @@
-<div *ngIf="recipes">
-    <div *ngFor="let recipe of recipes" class="recipe-card">
+@if (recipes) {
+  <div>
+    @for (recipe of recipes; track recipe) {
+      <div class="recipe-card">
         <small>Last Modified: {{ recipe.updatedAt | date:'dd-MM-yy hh:mm' }}</small>
         <h3>{{ recipe.name }}</h3>
         <p>{{ recipe.description }}</p>
-
-        <div *ngIf="recipe.ingredients && recipe.ingredients.length > 0">
+        @if (recipe.ingredients && recipe.ingredients.length > 0) {
+          <div>
             <h4>Ingredients:</h4>
             <ul>
-                <li *ngFor="let ingredient of recipe.ingredients" class="ingredientRow">
-                    <input type="text" [(ngModel)]="ingredient.name" /> - <input type="text"
-                        [(ngModel)]="ingredient.quantity" />
-                    <button *ngIf="ingredient.name && ingredient.quantity && ingredient._id" (click)="updateIngredient(recipe._id, ingredient)" class="ingredientButton">Update</button>
-                    <button *ngIf="ingredient.name && ingredient.quantity && ingredient._id" (click)="removeIngredientFromRecipe(recipe, ingredient._id)" class="ingredientButton">Remove</button>
-                    <button *ngIf="addIngredientsVisible && ingredient.name && ingredient.quantity && !ingredient._id" (click)="addIngredients(recipe, ingredient)" class="blue-button ingredientButton">Save</button><br>
+              @for (ingredient of recipe.ingredients; track ingredient) {
+                <li class="ingredientRow">
+                  <input type="text" [(ngModel)]="ingredient.name" /> - <input type="text"
+                  [(ngModel)]="ingredient.quantity" />
+                @if (ingredient.name && ingredient.quantity && ingredient._id) {
+                  <button (click)="updateIngredient(recipe._id, ingredient)" class="ingredientButton">Update</button>
+                }
+                @if (ingredient.name && ingredient.quantity && ingredient._id) {
+                  <button (click)="removeIngredientFromRecipe(recipe, ingredient._id)" class="ingredientButton">Remove</button>
+                }
+                @if (addIngredientsVisible && ingredient.name && ingredient.quantity && !ingredient._id) {
+                  <button (click)="addIngredients(recipe, ingredient)" class="blue-button ingredientButton">Save</button>
+                  }<br>
                 </li>
+              }
             </ul>
+          </div>
+        }
+        @if (addEmptyIngredientsVisible) {
+          <button (click)="addEmptyIngredient(recipe)" class="blue-button">Add Another Ingredient</button>
+          }<br>
+          <hr>
+            @if (recipe.instructions && recipe.instructions !== '') {
+              <div>
+                <h3>Instructions:</h3>
+                <p>{{ recipe.instructions }}</p>
+              </div>
+            }
+            <button class="delete-button" (click)="deleteRecipe(recipe._id)">Delete</button>
+            <a routerLink="/recipes/{{recipe._id}}/update" class="update-button">Update</a>
+          </div>
+        }
+        <div class="pagination">
+          <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+          <span class="pages">{{ currentPage }} / {{ totalPages }}</span>
+          <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
         </div>
-        <button *ngIf="addEmptyIngredientsVisible" (click)="addEmptyIngredient(recipe)" class="blue-button">Add Another Ingredient</button><br>
-        <hr>
-        <div *ngIf="recipe.instructions && recipe.instructions !== ''">
-            <h3>Instructions:</h3>
-            <p>{{ recipe.instructions }}</p>
-        </div>
+      </div>
+    }
 
-        <button class="delete-button" (click)="deleteRecipe(recipe._id)">Delete</button>
-        <a routerLink="/recipes/{{recipe._id}}/update" class="update-button">Update</a>
-    </div>
-    <div class="pagination">
-        <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
-        <span class="pages">{{ currentPage }} / {{ totalPages }}</span>
-        <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
-    </div>
-</div>
-
-<div *ngIf="!recipes">
-    <p>No recipes to show</p>
-</div>
+    @if (!recipes) {
+      <div>
+        <p>No recipes to show</p>
+      </div>
+    }
